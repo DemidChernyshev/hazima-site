@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}{{ product['title'] }} — MERCH{% endblock %}
+{% block content %}
+<section class="container product-page">
+    <div class="product-media">
+        <img src="{{ url_for('static', filename='img/tshirts/' ~ product['image']) }}" alt="{{ product['title'] }}">
+    </div>
+    <div class="product-info">
+        <h1>{{ product['title'] }}</h1>
+        <div class="price">{{ product['price'] }} ₽</div>
+        <p class="desc">{{ product['description'] }}</p>
+
+        <form method="post" action="{{ url_for('cart_add', pid=product['id']) }}" class="add-form">
+            <div class="field">
+                <label>Размер</label>
+                <div class="sizes">
+                    {% for s in sizes %}
+                    <label class="size-opt">
+                        <input type="radio" name="size" value="{{ s['size'] }}" {% if loop.first %}checked{% endif %} required>
+                        <span>{{ s['size'] }}</span>
+                    </label>
+                    {% else %}
+                    <p class="out-of-stock">Нет в наличии</p>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="field">
+                <label>Количество</label>
+                <input type="number" name="qty" value="1" min="1" max="10" class="qty-input">
+            </div>
+            <button type="submit" class="btn btn-primary" {% if not sizes %}disabled{% endif %}>
+                В корзину
+            </button>
+        </form>
+
+        <ul class="features">
+            <li>Плотный хлопок 240 г/м²</li>
+            <li>Доставка по РФ 3–7 дней</li>
+            <li>Оплата при получении</li>
+        </ul>
+    </div>
+</section>
+{% endblock %}

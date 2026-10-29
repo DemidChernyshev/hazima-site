@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Корзина — MERCH{% endblock %}
+{% block content %}
+<section class="container cart-page">
+    <h1>Корзина</h1>
+
+    {% if items %}
+    <div class="cart-list">
+        {% for it in items %}
+        <div class="cart-item">
+            <img src="{{ url_for('static', filename='img/tshirts/' ~ it.product['image']) }}" alt="">
+            <div class="cart-item-info">
+                <div class="cart-item-title">{{ it.product['title'] }}</div>
+                <div class="cart-item-meta">Размер: {{ it.size }} • {{ it.qty }} шт.</div>
+            </div>
+            <div class="cart-item-price">{{ it.line_total }} ₽</div>
+            <form method="post" action="{{ url_for('cart_remove', idx=loop.index0) }}">
+                <button class="remove" title="Удалить">×</button>
+            </form>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="cart-total">
+        <div>Итого:</div>
+        <div class="total-amount">{{ total }} ₽</div>
+    </div>
+    <div class="cart-actions">
+        <a href="{{ url_for('index') }}" class="btn btn-ghost">Продолжить покупки</a>
+        <a href="{{ url_for('checkout') }}" class="btn btn-primary">Оформить заказ</a>
+    </div>
+    {% else %}
+    <p class="empty">Корзина пуста. <a href="{{ url_for('index') }}">Перейти в каталог</a></p>
+    {% endif %}
+</section>
+{% endblock %}

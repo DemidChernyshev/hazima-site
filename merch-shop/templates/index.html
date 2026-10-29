@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Каталог — MERCH{% endblock %}
+{% block content %}
+<section class="hero">
+    <div class="container">
+        <h1>Футболки,<br>которые говорят за тебя.</h1>
+        <p>Лимитированные дропы. Плотный хлопок 240 г/м². Печать, которая не слезет после первой стирки.</p>
+    </div>
+</section>
+
+<section class="catalog container">
+    <div class="grid">
+        {% for p in products %}
+        <a href="{{ url_for('product', pid=p['id']) }}" class="card">
+            <div class="card-img">
+                <img src="{{ url_for('static', filename='img/tshirts/' ~ p['image']) }}" alt="{{ p['title'] }}" loading="lazy">
+            </div>
+            <div class="card-body">
+                <div class="card-title">{{ p['title'] }}</div>
+                <div class="card-price">{{ p['price'] }} ₽</div>
+            </div>
+        </a>
+        {% else %}
+        <p class="empty">Пока пусто. Добавь товары через <code>python seed.py</code>.</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}
