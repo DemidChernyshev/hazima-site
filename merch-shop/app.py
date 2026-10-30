@@ -18,7 +18,6 @@ def initdb_command():
     print('✅ БД инициализирована')
 
 
-# Декоратор для защиты админки
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -30,12 +29,27 @@ def admin_required(f):
     return decorated_function
 
 
-# ---------- КАТАЛОГ ----------
+# ---------- КАТАЛОГ (ТОЛЬКО ОДНА ФУНКЦИЯ!) ----------
 @app.route('/')
 def index():
     db = get_db()
-    products = db.execute("SELECT * FROM products WHERE is_active = 1 ORDER BY id DESC").fetchall()
-    return render_template('index.html', products=products)
+    query = request.args.get('q', '').strip()
+    cat = request.args.get('cat', '').strip()
+
+    sql = "SELECT * FROM products WHERE is_active = 1"
+    params = []
+
+    if query:
+        sql += " AND title LIKE ?"
+        params.append('%' + query + '%')
+    if cat:
+        sql += " AND category = ?"
+        params.append(cat)
+
+    sql += " ORDER BY id DESC"
+    products = db.execute(sql, params).fetchall()
+
+    return render_template('index.html', products=products, query=query, current_cat=cat)
 
 
 # ---------- ТОВАР ----------
@@ -192,7 +206,7 @@ def admin_panel():
 def admin_add_product():
     title = request.form.get('title')
     price = int(request.form.get('price', 0))
-    img = request.form.get('image', '1.jpg')
+    img = request.form.get('image')  # Убрал '1.jpg'
     desc = request.form.get('description', '')
     cat = request.form.get('category', 'tshirts')
 
@@ -211,25 +225,5 @@ def admin_add_product():
 def ping(): return {'status': 'ok'}, 200
 
 
-@app.route('/')
-def index():
-    db = get_db()
-    query = request.args.get('q', '').strip()
-    cat = request.args.get('cat', '').strip()
-
-    sql = "SELECT * FROM products WHERE is_active = 1"
-    params = []
-
-    if query:
-        sql += " AND title LIKE ?"
-        params.append('%' + query + '%')
-    if cat:
-        sql += " AND category = ?"
-        params.append(cat)
-
-    sql += " ORDER BY id DESC"
-    products = db.execute(sql, params).fetchall()
-
-    return render_template('index.html', products=products, query=query, current_cat=cat)
 if __name__ == '__main__':
     app.run(debug=True)
