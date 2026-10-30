@@ -10,7 +10,7 @@
 <body>
 <header class="header">
     <div class="container header-inner">
-        <a href="{{ url_for('index') }}" class="logo">ХАЗИМА<span>.</span></a>
+        <a href="{{ url_for('index') }}" class="logo">HAZIMA<span>.RU</span></a>
         <nav class="nav">
             <a href="{{ url_for('index') }}">Каталог</a>
             {% if session.get('user_id') %}
@@ -38,7 +38,7 @@
 
 <footer class="footer">
     <div class="container" style="text-align:center; color:#888;">
-        © 2026 HOZHA.RU — Оденься в культуру
+        <div>© 2026 HAZIMA.RU — Стиль. Орнамент. Татарстан.</div>
     </div>
 </footer>
 <script src="{{ url_for('static', filename='js/main.js') }}"></script>
