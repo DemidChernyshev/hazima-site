@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="auth-page container">
+    <h1>Регистрация</h1>
+    <form method="POST" class="auth-form">
+        <div class="field"><label>Логин</label><input type="text" name="username" required></div>
+        <div class="field"><label>Пароль</label><input type="password" name="password" required></div>
+        <button type="submit" class="btn btn-primary full-width">Создать аккаунт</button>
+        <p class="auth-link">Уже есть аккаунт? <a href="{{ url_for('login') }}">Войти</a></p>
+    </form>
+</section>
+{% endblock %}

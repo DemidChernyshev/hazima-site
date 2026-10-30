@@ -1,9 +1,18 @@
+CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    is_admin INTEGER DEFAULT 0,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE IF NOT EXISTS products (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     title TEXT NOT NULL,
     description TEXT,
     price INTEGER NOT NULL,
     image TEXT NOT NULL,
+    category TEXT DEFAULT 'tshirts',
     is_active INTEGER DEFAULT 1
 );
 
@@ -11,19 +20,20 @@ CREATE TABLE IF NOT EXISTS product_sizes (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     product_id INTEGER NOT NULL,
     size TEXT NOT NULL,
-    stock INTEGER DEFAULT 0,
+    stock INTEGER DEFAULT 10,
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS orders (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER,
     customer_name TEXT NOT NULL,
     phone TEXT NOT NULL,
-    telegram TEXT,
     address TEXT NOT NULL,
     total INTEGER NOT NULL,
     status TEXT DEFAULT 'new',
-    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
 CREATE TABLE IF NOT EXISTS order_items (

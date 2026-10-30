@@ -1,10 +1,9 @@
 {% extends "base.html" %}
-{% block title %}Каталог — MERCH{% endblock %}
 {% block content %}
 <section class="hero">
     <div class="container">
-        <h1>Футболки,<br>которые говорят за тебя.</h1>
-        <p>Лимитированные дропы. Плотный хлопок 240 г/м². Печать, которая не слезет после первой стирки.</p>
+        <h1>Код <em>твоего</em><br>города.</h1>
+        <p>Ограниченные коллекции одежды. Плотный хлопок 240 г/м².</p>
     </div>
 </section>
 
@@ -13,15 +12,14 @@
         {% for p in products %}
         <a href="{{ url_for('product', pid=p['id']) }}" class="card">
             <div class="card-img">
-                <img src="{{ url_for('static', filename='img/tshirts/' ~ p['image']) }}" alt="{{ p['title'] }}" loading="lazy">
+                <!-- Проверка: если файл картинки существует, показываем его. Если нет - просто темный фон -->
+                <img src="{{ url_for('static', filename='img/tshirts/' ~ p['image']) }}" alt="{{ p['title'] }}" onerror="this.style.display='none'">
             </div>
             <div class="card-body">
                 <div class="card-title">{{ p['title'] }}</div>
                 <div class="card-price">{{ p['price'] }} ₽</div>
             </div>
         </a>
-        {% else %}
-        <p class="empty">Пока пусто. Добавь товары через <code>python seed.py</code>.</p>
         {% endfor %}
     </div>
 </section>

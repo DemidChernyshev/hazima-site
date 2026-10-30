@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="container profile-page">
+    <h1>Профиль: {{ session['username'] }}</h1>
+    <h2>История заказов</h2>
+    {% if orders %}
+        <div class="orders-list">
+            {% for o in orders %}
+            <div class="order-card">
+                <div class="order-header">
+                    <span>Заказ №{{ o['id'] }}</span>
+                    <span class="order-status">{{ o['status'] }}</span>
+                </div>
+                <div class="order-info">
+                    <span>Дата: {{ o['created_at'][:10] }}</span>
+                    <span class="order-total">{{ o['total'] }} ₽</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="empty">У вас пока нет заказов.</p>
+    {% endif %}
+</section>
+{% endblock %}
