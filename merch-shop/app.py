@@ -11,12 +11,10 @@ app.config['DATABASE'] = os.path.join(app.instance_path, 'shop.db')
 os.makedirs(app.instance_path, exist_ok=True)
 init_db_app(app)
 
-
 @app.cli.command('initdb')
 def initdb_command():
     init_db()
     print('✅ БД инициализирована')
-
 
 def admin_required(f):
     @wraps(f)
@@ -25,15 +23,13 @@ def admin_required(f):
             flash('Доступ только для администратора', 'error')
             return redirect(url_for('login'))
         return f(*args, **kwargs)
-
     return decorated_function
 
-
-# АВТОЗАПОЛНЕНИЕ БАЗЫ ПРИ СТАРТЕ
+# АВТОЗАПОЛНЕНИЕ БАЗЫ ПРИ СТАРТЕ (ровно 5 товаров)
 with app.app_context():
     db = get_db()
     count = db.execute("SELECT count(*) FROM products").fetchone()[0]
-    if count == 0 or db.execute("SELECT price FROM products LIMIT 1").fetchone()[0] == 0:
+    if count != 5: # Если товаров не 5, перезаписываем
         desc_tshirt = "Базовая футболка из мягкого хлопка с уникальным кастомным рисунком. Спокойный силуэт, не сковывает движения, а принт добавляет индивидуальности без кричащих деталей. Отлично смотрится и с джинсами, и с карго, и со спортивными штанами. Рисунок нанесён стойкой краской — сохраняет цвет после множества стирок."
         desc_bag = "Шоппер с авторским кастомным рисунком — это не просто аксессуар, а маленькая история на ткани. Каждый элемент принта продуман и несёт свой смысл. Плотный материал и надёжные ручки выдерживают повседневную нагрузку."
 
@@ -42,10 +38,6 @@ with app.app_context():
 
         demo = [
             ("Шоппер Classic", desc_bag, 700, "Bag/Bag-1.jpg", "accessories"),
-            ("Шоппер Tatar", desc_bag, 700, "Bag/Bag-2.jpg", "accessories"),
-            ("Шоппер Black", desc_bag, 700, "Bag/Bag-3.jpg", "accessories"),
-            ("Шоппер Canvas", desc_bag, 700, "Bag/Bag-4.jpg", "accessories"),
-            ("Шоппер Street", desc_bag, 700, "Bag/Bag-5.jpg", "accessories"),
             ("Футболка Oversize", desc_tshirt, 1700, "Tshirt/TShirt-1.jpg", "tshirts"),
             ("Футболка Tatar", desc_tshirt, 1700, "Tshirt/TShirt2-1.jpg", "tshirts"),
             ("Футболка Basic", desc_tshirt, 1700, "Tshirt/TShirt3-1.jpg", "tshirts"),
@@ -58,30 +50,23 @@ with app.app_context():
                 db.execute("INSERT INTO product_sizes (product_id, size) VALUES (?, ?)", (cur.lastrowid, size))
         db.commit()
 
-# ---------- КАТАЛОГ (ТОЛЬКО ОДНА ФУНКЦИЯ!) ----------
 @app.route('/')
 def index():
     db = get_db()
     query = request.args.get('q', '').strip()
     cat = request.args.get('cat', '').strip()
-
     sql = "SELECT * FROM products WHERE is_active = 1"
     params = []
-
     if query:
         sql += " AND title LIKE ?"
         params.append('%' + query + '%')
     if cat:
         sql += " AND category = ?"
         params.append(cat)
-
     sql += " ORDER BY id DESC"
     products = db.execute(sql, params).fetchall()
-
     return render_template('index.html', products=products, query=query, current_cat=cat)
 
-
-# ---------- ТОВАР ----------
 @app.route('/product/<int:pid>')
 def product(pid):
     db = get_db()
@@ -90,11 +75,8 @@ def product(pid):
     sizes = db.execute("SELECT * FROM product_sizes WHERE product_id = ?", (pid,)).fetchall()
     return render_template('product.html', product=p, sizes=sizes)
 
-
-# ---------- КОРЗИНА ----------
 def get_cart():
     return session.setdefault('cart', [])
-
 
 @app.route('/cart/add/<int:pid>', methods=['POST'])
 def cart_add(pid):
@@ -112,7 +94,6 @@ def cart_add(pid):
     flash('Товар добавлен в корзину', 'success')
     return redirect(url_for('cart_view'))
 
-
 @app.route('/cart')
 def cart_view():
     db = get_db()
@@ -126,7 +107,6 @@ def cart_view():
             items.append({'product': p, 'size': it['size'], 'qty': it['qty'], 'line_total': line})
     return render_template('cart.html', items=items, total=total)
 
-
 @app.route('/cart/remove/<int:idx>', methods=['POST'])
 def cart_remove(idx):
     cart = get_cart()
@@ -136,14 +116,11 @@ def cart_remove(idx):
         session.modified = True
     return redirect(url_for('cart_view'))
 
-
-# ---------- ОФОРМЛЕНИЕ ----------
 @app.route('/checkout', methods=['GET', 'POST'])
 def checkout():
     db = get_db()
     cart = get_cart()
     if not cart: return redirect(url_for('index'))
-
     items, total = [], 0
     for it in cart:
         p = db.execute("SELECT * FROM products WHERE id = ?", (it['pid'],)).fetchone()
@@ -151,12 +128,10 @@ def checkout():
             line = p['price'] * it['qty']
             total += line
             items.append({'product': p, 'size': it['size'], 'qty': it['qty'], 'price': p['price']})
-
     if request.method == 'POST':
         name = request.form.get('name')
         phone = request.form.get('phone')
         address = request.form.get('address')
-
         cur = db.execute("INSERT INTO orders (user_id, customer_name, phone, address, total) VALUES (?, ?, ?, ?, ?)",
                          (session.get('user_id'), name, phone, address, total))
         order_id = cur.lastrowid
@@ -166,11 +141,8 @@ def checkout():
         db.commit()
         session['cart'] = []
         return render_template('checkout.html', success=True, order_id=order_id)
-
     return render_template('checkout.html', items=items, total=total)
 
-
-# ---------- АВТОРИЗАЦИЯ ----------
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -186,7 +158,6 @@ def register():
             flash('Аккаунт создан!', 'success')
             return redirect(url_for('login'))
     return render_template('register.html')
-
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -204,13 +175,11 @@ def login():
         flash('Неверный логин или пароль', 'error')
     return render_template('login.html')
 
-
 @app.route('/logout')
 def logout():
     session.clear()
     flash('Вы вышли', 'success')
     return redirect(url_for('index'))
-
 
 @app.route('/profile')
 def profile():
@@ -219,8 +188,6 @@ def profile():
     orders = db.execute("SELECT * FROM orders WHERE user_id = ? ORDER BY id DESC", (session['user_id'],)).fetchall()
     return render_template('profile.html', orders=orders)
 
-
-# ---------- АДМИНКА ----------
 @app.route('/admin')
 @admin_required
 def admin_panel():
@@ -229,16 +196,14 @@ def admin_panel():
     orders = db.execute("SELECT * FROM orders ORDER BY id DESC").fetchall()
     return render_template('admin.html', products=products, orders=orders)
 
-
 @app.route('/admin/add_product', methods=['POST'])
 @admin_required
 def admin_add_product():
     title = request.form.get('title')
     price = int(request.form.get('price', 0))
-    img = request.form.get('image')  # Убрал '1.jpg'
+    img = request.form.get('image')
     desc = request.form.get('description', '')
     cat = request.form.get('category', 'tshirts')
-
     db = get_db()
     cur = db.execute("INSERT INTO products (title, description, price, image, category) VALUES (?, ?, ?, ?, ?)",
                      (title, desc, price, img, cat))
@@ -249,10 +214,8 @@ def admin_add_product():
     flash('Товар добавлен!', 'success')
     return redirect(url_for('admin_panel'))
 
-
 @app.route('/ping')
 def ping(): return {'status': 'ok'}, 200
-
 
 if __name__ == '__main__':
     app.run(debug=True)
