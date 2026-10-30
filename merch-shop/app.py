@@ -37,11 +37,11 @@ with app.app_context():
         db.execute("DELETE FROM products")
 
         demo = [
-            ("Шоппер Classic", desc_bag, 700, "https://i.postimg.cc/Fk1T84SR/Bag-1.jpg", "accessories"),
-            ("Футболка Oversize", desc_tshirt, 1700, "https://i.postimg.cc/t7gvYhcY/TShirt-1.jpg", "tshirts"),
-            ("Футболка Tatar", desc_tshirt, 1700, "https://i.postimg.cc/jnCMmbfy/TShirt2-1.jpg", "tshirts"),
-            ("Футболка Basic", desc_tshirt, 1700, "https://i.postimg.cc/z3f2Vnc6/TShirt3-1.jpg", "tshirts"),
-            ("Футболка Black", desc_tshirt, 1700, "https://i.postimg.cc/fkbqJxPh/TShirt4-1.jpg", "tshirts"),
+            ("Шоппер Classic", desc_bag, 700, "https://i.postimg.cc/J05Sy74b/Bag-1.jpg", "accessories"),
+            ("Футболка Oversize", desc_tshirt, 1700, "https://i.postimg.cc/G3FWgKJJ/TShirt-1.jpg", "tshirts"),
+            ("Футболка Tatar", desc_tshirt, 1700, "https://i.postimg.cc/VvW2SsLZ/TShirt2-1.jpg", "tshirts"),
+            ("Футболка Basic", desc_tshirt, 1700, "https://i.postimg.cc/fWcGqCjz/TShirt3-1.jpg", "tshirts"),
+            ("Футболка Black", desc_tshirt, 1700, "https://i.postimg.cc/3rXsf1CW/TShirt4-1.jpg", "tshirts"),
         ]
         for title, desc, price, img, cat in demo:
             cur = db.execute("INSERT INTO products (title, description, price, image, category) VALUES (?, ?, ?, ?, ?)",
