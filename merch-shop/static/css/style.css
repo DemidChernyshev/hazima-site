@@ -104,3 +104,14 @@ body::after {
 @media (max-width: 1100px) {
     body::before, body::after { display: none !important; }
 }
+/* Фильтры категорий */
+.category-filters {
+    display: flex; gap: 12px; margin-bottom: 40px; flex-wrap: wrap; justify-content: center;
+}
+.filter-btn {
+    padding: 12px 24px; border: 1px solid var(--line); border-radius: 99px;
+    font-size: 14px; font-weight: 600; color: var(--muted); transition: 0.2s;
+}
+.filter-btn:hover { border-color: var(--fg); color: var(--fg); }
+.filter-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.search-results { color: var(--muted); margin-bottom: 24px; text-align: center; font-size: 14px; }

@@ -1,13 +1,16 @@
 {% extends "base.html" %}
-{% block title %}{{ product['title'] }} — MERCH{% endblock %}
+{% block title %}{{ product['title'] }} — HAZIMA.RU{% endblock %}
 {% block content %}
 <section class="container product-page">
     <div class="product-media">
-        <img src="{{ url_for('static', filename='img/tshirts/' ~ product['image']) }}" alt="{{ product['title'] }}">
+        <!-- Путь к картинке без лишних папок -->
+        <img src="{{ url_for('static', filename='img/' ~ product['image']) }}" alt="{{ product['title'] }}">
     </div>
     <div class="product-info">
         <h1>{{ product['title'] }}</h1>
-        <div class="price">{{ product['price'] }} ₽</div>
+        <div class="price-tag">{{ product['price'] }} ₽</div>
+
+        <!-- Вывод описания из базы -->
         <p class="desc">{{ product['description'] }}</p>
 
         <form method="post" action="{{ url_for('cart_add', pid=product['id']) }}" class="add-form">
@@ -38,6 +41,8 @@
             <li>Доставка по РФ 3–7 дней</li>
             <li>Оплата при получении</li>
         </ul>
+
+        <a href="{{ url_for('index') }}" style="display:inline-block; margin-top:24px; color:var(--muted); font-size:14px;">← Вернуться в каталог</a>
     </div>
 </section>
 {% endblock %}

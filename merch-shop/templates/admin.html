@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Админка — HAZIMA.RU{% endblock %}
+{% block content %}
+<section class="container admin-page">
+    <h1>Панель управления</h1>
+
+    <div class="admin-grid">
+        <!-- Форма добавления товара -->
+        <div class="admin-card">
+            <h2>Добавить товар</h2>
+            <form method="POST" action="{{ url_for('admin_add_product') }}">
+                <div class="field">
+                    <label>Название</label>
+                    <input type="text" name="title" required placeholder="Например: Шоппер Classic">
+                </div>
+                <div class="field">
+                    <label>Цена (в рублях)</label>
+                    <input type="number" name="price" required placeholder="1700">
+                </div>
+                <div class="field">
+                    <label>Категория</label>
+                    <select name="category" required style="width:100%; padding:14px; background:var(--bg); border:1px solid var(--line); color:var(--fg); border-radius:8px;">
+                        <option value="tshirts">Футболка</option>
+                        <option value="accessories">Шоппер / Аксессуар</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Путь к картинке</label>
+                    <!-- Тут подсказка: Bag/Bag-1.jpg или Tshirt/TShirt-1.jpg -->
+                    <input type="text" name="image" required placeholder="Bag/Bag-1.jpg">
+                </div>
+                <div class="field">
+                    <label>Описание</label>
+                    <textarea name="description" rows="4" style="width:100%; padding:14px; background:var(--bg); border:1px solid var(--line); color:var(--fg); border-radius:8px; font-family:inherit;"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary full-width">Создать товар</button>
+            </form>
+        </div>
+
+        <!-- Список заказов -->
+        <div class="admin-card">
+            <h2>Последние заказы</h2>
+            <div class="orders-list">
+                {% for o in orders %}
+                <div class="order-card">
+                    <div class="order-header">
+                        <span>Заказ №{{ o['id'] }} от {{ o['created_at'][:10] }}</span>
+                        <span class="order-total">{{ o['total'] }} ₽</span>
+                    </div>
+                    <div class="order-details">
+                        <p>Клиент: <strong>{{ o['customer_name'] }}</strong> ({{ o['phone'] }})</p>
+                        <p>Адрес: {{ o['address'] }}</p>
+                    </div>
+                    <!-- Смена статуса -->
+                    <form method="POST" action="{{ url_for('admin_order_status', oid=o['id']) }}" class="status-form">
+                        <select name="status">
+                            <option value="new" {% if o['status']=='new' %}selected{% endif %}>Новый</option>
+                            <option value="paid" {% if o['status']=='paid' %}selected{% endif %}>Оплачен</option>
+                            <option value="shipped" {% if o['status']=='shipped' %}selected{% endif %}>Отправлен</option>
+                            <option value="done" {% if o['status']=='done' %}selected{% endif %}>Выполнен</option>
+                        </select>
+                        <button type="submit" class="btn btn-ghost">Обновить</button>
+                    </form>
+                </div>
+                {% else %}
+                <p class="empty">Заказов пока нет.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

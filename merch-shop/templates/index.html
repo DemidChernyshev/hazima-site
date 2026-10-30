@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% block title %}Каталог — HAZIMA.RU{% endblock %}
 {% block content %}
 <section class="hero">
     <div class="container">
@@ -8,18 +9,31 @@
 </section>
 
 <section class="catalog container">
+    <!-- Фильтры категорий -->
+    <div class="category-filters">
+        <a href="{{ url_for('index') }}" class="filter-btn {% if not current_cat %}active{% endif %}">Все</a>
+        <a href="{{ url_for('index', cat='tshirts') }}" class="filter-btn {% if current_cat == 'tshirts' %}active{% endif %}">Футболки</a>
+        <a href="{{ url_for('index', cat='accessories') }}" class="filter-btn {% if current_cat == 'accessories' %}active{% endif %}">Шопперы</a>
+    </div>
+
+    {% if query %}
+        <p class="search-results">Результаты по запросу: «{{ query }}»</p>
+    {% endif %}
+
     <div class="grid">
         {% for p in products %}
         <a href="{{ url_for('product', pid=p['id']) }}" class="card">
             <div class="card-img">
-                <!-- Проверка: если файл картинки существует, показываем его. Если нет - просто темный фон -->
-                <img src="{{ url_for('static', filename='img/tshirts/' ~ p['image']) }}" alt="{{ p['title'] }}" onerror="this.style.display='none'">
+                <!-- Путь к картинкам без папки tshirts -->
+                <img src="{{ url_for('static', filename='img/' ~ p['image']) }}" alt="{{ p['title'] }}" onerror="this.style.display='none'">
             </div>
             <div class="card-body">
                 <div class="card-title">{{ p['title'] }}</div>
                 <div class="card-price">{{ p['price'] }} ₽</div>
             </div>
         </a>
+        {% else %}
+        <p class="empty" style="grid-column: 1 / -1; text-align: center; padding: 40px;">Ничего не найдено. Попробуй другой запрос.</p>
         {% endfor %}
     </div>
 </section>

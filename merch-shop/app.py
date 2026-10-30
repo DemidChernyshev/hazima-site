@@ -211,5 +211,25 @@ def admin_add_product():
 def ping(): return {'status': 'ok'}, 200
 
 
+@app.route('/')
+def index():
+    db = get_db()
+    query = request.args.get('q', '').strip()
+    cat = request.args.get('cat', '').strip()
+
+    sql = "SELECT * FROM products WHERE is_active = 1"
+    params = []
+
+    if query:
+        sql += " AND title LIKE ?"
+        params.append('%' + query + '%')
+    if cat:
+        sql += " AND category = ?"
+        params.append(cat)
+
+    sql += " ORDER BY id DESC"
+    products = db.execute(sql, params).fetchall()
+
+    return render_template('index.html', products=products, query=query, current_cat=cat)
 if __name__ == '__main__':
     app.run(debug=True)

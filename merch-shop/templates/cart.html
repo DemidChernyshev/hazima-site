@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Корзина — MERCH{% endblock %}
+{% block title %}Корзина — HAZIMA.RU{% endblock %}
 {% block content %}
 <section class="container cart-page">
     <h1>Корзина</h1>
@@ -8,7 +8,8 @@
     <div class="cart-list">
         {% for it in items %}
         <div class="cart-item">
-            <img src="{{ url_for('static', filename='img/tshirts/' ~ it.product['image']) }}" alt="">
+            <!-- Исправлен путь к картинке -->
+            <img src="{{ url_for('static', filename='img/' ~ it.product['image']) }}" alt="{{ it.product['title'] }}">
             <div class="cart-item-info">
                 <div class="cart-item-title">{{ it.product['title'] }}</div>
                 <div class="cart-item-meta">Размер: {{ it.size }} • {{ it.qty }} шт.</div>
