@@ -3,14 +3,13 @@
 {% block content %}
 <section class="container product-page">
     <div class="product-media">
-        <!-- Путь к картинке без лишних папок -->
-        <img src="{{ url_for('static', filename='img/' ~ product['image']) }}" alt="{{ product['title'] }}">
+        <!-- ТУТ ИЗМЕНЕНИЕ: убрали 'img/' -->
+        <img src="{{ product['image'] }}" alt="{{ product['title'] }}">
     </div>
     <div class="product-info">
         <h1>{{ product['title'] }}</h1>
         <div class="price-tag">{{ product['price'] }} ₽</div>
 
-        <!-- Вывод описания из базы -->
         <p class="desc">{{ product['description'] }}</p>
 
         <form method="post" action="{{ url_for('cart_add', pid=product['id']) }}" class="add-form">

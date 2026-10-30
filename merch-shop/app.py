@@ -25,7 +25,7 @@ def admin_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-# АВТОЗАПОЛНЕНИЕ БАЗЫ ПРИ СТАРТЕ (ровно 5 товаров)
+# АВТОЗАПОЛНЕНИЕ БАЗЫ ПРИ СТАРТЕ
 with app.app_context():
     db = get_db()
     count = db.execute("SELECT count(*) FROM products").fetchone()[0]
@@ -37,11 +37,11 @@ with app.app_context():
         db.execute("DELETE FROM products")
 
         demo = [
-            ("Шоппер Classic", desc_bag, 700, "Bag/Bag-1.jpg", "accessories"),
-            ("Футболка Oversize", desc_tshirt, 1700, "Tshirt/TShirt-1.jpg", "tshirts"),
-            ("Футболка Tatar", desc_tshirt, 1700, "Tshirt/TShirt2-1.jpg", "tshirts"),
-            ("Футболка Basic", desc_tshirt, 1700, "Tshirt/TShirt3-1.jpg", "tshirts"),
-            ("Футболка Black", desc_tshirt, 1700, "Tshirt/TShirt4-1.jpg", "tshirts"),
+            ("Шоппер Classic", desc_bag, 700, "https://i.postimg.cc/Fk1T84SR/Bag-1.jpg", "accessories"),
+            ("Футболка Oversize", desc_tshirt, 1700, "https://i.postimg.cc/t7gvYhcY/TShirt-1.jpg", "tshirts"),
+            ("Футболка Tatar", desc_tshirt, 1700, "https://i.postimg.cc/jnCMmbfy/TShirt2-1.jpg", "tshirts"),
+            ("Футболка Basic", desc_tshirt, 1700, "https://i.postimg.cc/z3f2Vnc6/TShirt3-1.jpg", "tshirts"),
+            ("Футболка Black", desc_tshirt, 1700, "https://i.postimg.cc/fkbqJxPh/TShirt4-1.jpg", "tshirts"),
         ]
         for title, desc, price, img, cat in demo:
             cur = db.execute("INSERT INTO products (title, description, price, image, category) VALUES (?, ?, ?, ?, ?)",
