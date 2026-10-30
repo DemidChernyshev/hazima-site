@@ -29,6 +29,35 @@ def admin_required(f):
     return decorated_function
 
 
+# АВТОЗАПОЛНЕНИЕ БАЗЫ ПРИ СТАРТЕ
+with app.app_context():
+    db = get_db()
+    count = db.execute("SELECT count(*) FROM products").fetchone()[0]
+    if count == 0 or db.execute("SELECT price FROM products LIMIT 1").fetchone()[0] == 0:
+        desc_tshirt = "Базовая футболка из мягкого хлопка с уникальным кастомным рисунком. Спокойный силуэт, не сковывает движения, а принт добавляет индивидуальности без кричащих деталей. Отлично смотрится и с джинсами, и с карго, и со спортивными штанами. Рисунок нанесён стойкой краской — сохраняет цвет после множества стирок."
+        desc_bag = "Шоппер с авторским кастомным рисунком — это не просто аксессуар, а маленькая история на ткани. Каждый элемент принта продуман и несёт свой смысл. Плотный материал и надёжные ручки выдерживают повседневную нагрузку."
+
+        db.execute("DELETE FROM product_sizes")
+        db.execute("DELETE FROM products")
+
+        demo = [
+            ("Шоппер Classic", desc_bag, 700, "Bag/Bag-1.jpg", "accessories"),
+            ("Шоппер Tatar", desc_bag, 700, "Bag/Bag-2.jpg", "accessories"),
+            ("Шоппер Black", desc_bag, 700, "Bag/Bag-3.jpg", "accessories"),
+            ("Шоппер Canvas", desc_bag, 700, "Bag/Bag-4.jpg", "accessories"),
+            ("Шоппер Street", desc_bag, 700, "Bag/Bag-5.jpg", "accessories"),
+            ("Футболка Oversize", desc_tshirt, 1700, "Tshirt/TShirt-1.jpg", "tshirts"),
+            ("Футболка Tatar", desc_tshirt, 1700, "Tshirt/TShirt2-1.jpg", "tshirts"),
+            ("Футболка Basic", desc_tshirt, 1700, "Tshirt/TShirt3-1.jpg", "tshirts"),
+            ("Футболка Black", desc_tshirt, 1700, "Tshirt/TShirt4-1.jpg", "tshirts"),
+        ]
+        for title, desc, price, img, cat in demo:
+            cur = db.execute("INSERT INTO products (title, description, price, image, category) VALUES (?, ?, ?, ?, ?)",
+                             (title, desc, price, img, cat))
+            for size in ['S', 'M', 'L', 'XL']:
+                db.execute("INSERT INTO product_sizes (product_id, size) VALUES (?, ?)", (cur.lastrowid, size))
+        db.commit()
+
 # ---------- КАТАЛОГ (ТОЛЬКО ОДНА ФУНКЦИЯ!) ----------
 @app.route('/')
 def index():
